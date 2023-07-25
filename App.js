@@ -1,0 +1,610 @@
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, View, Text as RNText, TouchableOpacity, Image, Animated, Modal, Button, Linking, TextInput } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { createStackNavigator } from '@react-navigation/stack';
+
+
+const SplineViewer = () => {
+  let htmlContent = `
+    <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+    <spline-viewer url="https://prod.spline.design/UWoeqiir20o49Dah/scene.splinecode"></spline-viewer>
+  `;
+
+  return (
+    <WebView
+      originWhitelist={['*']}
+      source={{ html: htmlContent }}
+      style={{ marginTop: 20 }}
+    />
+  );
+}
+
+
+function Text(props) {
+  return <RNText {...props} style={[props.style, {}]} />;
+}
+
+function HomeScreen({ navigation }) {
+  const [name, setName] = useState('');
+  const [cep, setCep] = useState('');
+
+  const handleWhatsAppRedirect = async () => {
+    const location = cep ? await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then(response => response.json())
+      .then(data => data.bairro && data.localidade ? ` e sou do bairro ${data.bairro}, ${data.localidade}` : '') : '';
+    const whatsappUrl = `https://api.whatsapp.com/send/?phone=%2B5547992531701&text=${encodeURIComponent(`Olá, me chamo ${name}${location}.`)}&type=phone_number&app_absent=0`;
+    Linking.openURL(whatsappUrl);
+  };
+
+  const Separator = () => <View style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginVertical: 20 }} />;
+  const Button = ({ onPress, source, title, text }) => (
+    <TouchableOpacity style={styles.button} onPress={onPress}>
+      <Image source={{ uri: source }} style={{ width: 28, height: 28, marginRight: 10 }} />
+      <View>
+        <Text style={styles.buttonTitle}>{title}</Text>
+        {text && <Text style={styles.buttonText}>{text}</Text>}
+      </View>
+      <Image source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }} style={{ marginLeft: 'auto', width: 20, height: 20 }} />
+    </TouchableOpacity>
+  );
+  const Input = ({ placeholder, onChangeText, value, keyboardType }) => (
+    <View style={{ flexDirection: 'row', height: 60, borderColor: 'rgba(0, 0, 0, 0.1)', borderWidth: 1, marginBottom: 20, borderRadius: 12, alignItems: 'center', paddingLeft: 10 }}>
+      <TextInput
+        style={{ flex: 1, fontFamily: 'Poppins_400Regular', fontSize: 16, color: 'black' }}
+        placeholder={placeholder}
+        placeholderTextColor="rgba(0, 0, 0, 0.6)"
+        onChangeText={onChangeText}
+        value={value}
+        keyboardType={keyboardType}
+      />
+    </View>
+  );
+
+  return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', padding: 28 }}>
+      <View style={{ borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.1)', borderRadius: 12, padding: 20 }}>
+        <Text style={{ fontSize: 20, marginBottom: 20, fontFamily: 'Poppins_600SemiBold', textAlign: 'center' }}>Bem-vindo à<Text style={{ color: '#FB5F21' }}> Victória Fitness Service</Text>!</Text>
+        <Text style={{ marginBottom: 20, fontFamily: 'Poppins_400Regular' }}>Somos especializados em manutenção e reparo de equipamentos<Text style={{ fontFamily: "Poppins_600SemiBold", color: '#FB5F21' }}> Athletic</Text>.</Text>
+        <Text style={{ fontFamily: "Poppins_400Regular" }}>Atendemos Joinville e região em um raio de 100Km.</Text>
+      </View>
+      <Text style={{ marginTop: 40, fontSize: 16, fontFamily: "Poppins_600SemiBold" }}>Deseja acessar algum de nossos serviços?</Text>
+      <Separator />
+      <Button onPress={() => navigation.navigate('equipamentos')} source='https://cdn.discordapp.com/attachments/1059425565330911284/1131660399842959370/piece.png' title='Manutenção ou Reparo' text='Esteiras, bicicletas' />
+      <Separator />
+      <Button onPress={() => navigation.navigate('vendas')} source='https://cdn.discordapp.com/attachments/1059425565330911284/1131820630321410108/bolt.png' title='Venda' text='Equipamentos, peças' />
+      <Separator />
+      <Text style={{ marginTop: 20, fontSize: 16, fontFamily: "Poppins_600SemiBold" }}>Alguma dúvida? Confira nossa FAQ</Text>
+      <Separator />
+      <Button onPress={() => navigation.navigate('ajuda')} source='https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png' title='Ajuda' />
+      <Separator />
+      <Text style={{ marginTop: 20, fontSize: 12, fontFamily: "Poppins_400Regular", color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center', marginBottom: 20 }}>Precisa de um contato mais direto? Preencha com suas informações e entre em contato!</Text>
+      <Input placeholder="Nome" onChangeText={setName} value={name} />
+      <Input placeholder="CEP" onChangeText={setCep} value={cep} keyboardType="numeric" />
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          backgroundColor: '#FB5F21',
+          padding: 10,
+          borderRadius: 50,
+          marginTop: 10,
+          width: '80%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          alignSelf: 'center',
+          flexWrap: 'wrap',
+        }}
+        onPress={handleWhatsAppRedirect}
+      >
+        <Image
+          source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131679603073761451/whatsapp.png' }}
+          style={{ width: 28, height: 28, marginRight: 10 }}
+        />
+        <Text style={{ color: 'white', fontSize: 16, fontFamily: "Poppins_400Regular" }}>Converse no WhatsApp</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+function EquipmentsScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+      <Text style={{ fontFamily: "Poppins_400Regular" }}>Estamos trabalhando para liberar em breve!</Text>
+    </View>
+  );
+}
+
+function PiecesScreen() {
+  const categories = ['Equipamento', 'Peça'];
+  const brands = ['Athletic', 'Gold', 'Muscle and Motion'];
+  const states = ['Novo', 'Semi-novo'];
+
+  const pieces = Array(10).fill().map((_, i) => ({
+    id: i,
+    name: `Peça ${i + 1}`,
+    category: categories[i % categories.length],
+    brand: brands[i % brands.length],
+    state: states[i % states.length]
+  }));
+
+  const [selectedPieces, setSelectedPieces] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [buttonOpacity] = useState(new Animated.Value(0));
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [filter, setFilter] = useState({ categories: [], brands: [], states: [] });
+
+  useEffect(() => {
+    Animated.timing(buttonOpacity, {
+      toValue: selectedPieces.length > 0 ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [selectedPieces.length]);
+
+  const handlePiecePress = (piece) => {
+    setSelectedPieces(selectedPieces => selectedPieces.find(selectedPiece => selectedPiece.id === piece.id)
+      ? selectedPieces.filter(selectedPiece => selectedPiece.id !== piece.id)
+      : [...selectedPieces, piece]);
+  };
+
+  const getGreeting = () => {
+    const currentHour = new Date().getHours();
+    return currentHour < 12 ? "Bom dia" : currentHour < 18 ? "Boa tarde" : "Boa noite";
+  };
+
+  const handleWhatsAppRedirect = () => {
+    let greeting = getGreeting();
+    let pieceNames = selectedPieces.map(piece => piece.name).join(', ');
+    let message = `${greeting}, estou interessado ${selectedPieces.length > 1 ? 'nas peças' : 'na peça'} ${pieceNames}. Teria em estoque?`;
+    let whatsappUrl = `https://api.whatsapp.com/send/?phone=%2B5547992531701&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
+    Linking.openURL(whatsappUrl);
+  };
+
+  const filteredPieces = pieces.filter(piece =>
+    piece.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (filter.categories.length === 0 || filter.categories.includes(piece.category)) &&
+    (filter.brands.length === 0 || filter.brands.includes(piece.brand)) &&
+    (filter.states.length === 0 || filter.states.includes(piece.state))
+  );
+
+  const handleFilterSelect = (type, value) => {
+    setFilter(prev => ({ ...prev, [type]: prev[type].includes(value) ? prev[type].filter(item => item !== value) : [...prev[type], value] }));
+  };
+
+  const isFiltering = Object.values(filter).some(arr => arr.length > 0);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 28 }}>
+        <View style={{ flexDirection: 'row', height: 40, borderColor: 'rgba(0, 0, 0, 0.1)', borderWidth: 1, marginBottom: 20, borderRadius: 12, alignItems: 'center', paddingLeft: 10, height: 50 }}>
+          <TextInput
+            style={{ flex: 1, fontFamily: 'Poppins_400Regular', fontSize: 14, color: 'rgba(0, 0, 0, 0.6)' }}
+            placeholder="pesquisar peças..."
+            placeholderTextColor="rgba(0, 0, 0, 0.6)"
+            onChangeText={text => setSearchQuery(text)}
+            value={searchQuery}
+          />
+          <Image
+            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131838979226996756/magnifying-glass.png' }}
+            style={{ width: 20, height: 20, marginRight: 10, opacity: 0.6 }}
+          />
+          <TouchableOpacity onPress={() => setFilterModalVisible(true)}>
+            <Image
+              source={{ uri: isFiltering ? 'https://cdn.discordapp.com/attachments/1059425565330911284/1132890835923513425/filter-list_1.png' : 'https://cdn.discordapp.com/attachments/1059425565330911284/1131874814110474300/filter-list.png' }}
+              style={{ width: 20, height: 20, marginRight: 20, opacity: 0.6 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          {filteredPieces.map((piece) => (
+            <TouchableOpacity key={piece.id} style={{ width: '48%', borderWidth: 1, borderColor: selectedPieces.find(selectedPiece => selectedPiece.id === piece.id) ? '#FB5F21' : 'rgba(0, 0, 0, 0.1)', borderRadius: 12, padding: 15, marginBottom: 20 }} onPress={() => handlePiecePress(piece)}>
+              <Image
+                source={{ uri: 'https://http2.mlstatic.com/D_NQ_NP_827275-MLB45599824506_042021-O.webp' }}
+                style={{ width: '100%', height: 100, resizeMode: 'contain', marginBottom: 10 }}
+              />
+              <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold' }}>{piece.name}</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular' }}>{piece.category}</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular' }}>{piece.brand}</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular' }}>{piece.state}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+      <Animated.View style={{ opacity: buttonOpacity }}>
+        {selectedPieces.length > 0 && (
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              backgroundColor: '#FB5F21',
+              padding: 10,
+              borderRadius: 50,
+              marginTop: 10,
+              width: '80%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
+              flexWrap: 'wrap',
+              position: 'absolute',
+              bottom: 5,
+              left: '10%',
+            }}
+            onPress={handleWhatsAppRedirect}
+          >
+            <Image
+              source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131679603073761451/whatsapp.png' }}
+              style={{ width: 28, height: 28, marginRight: 10 }}
+            />
+            <Text style={{ color: 'white', fontSize: 16, fontFamily: "Poppins_400Regular" }}>{`Solicitar ${selectedPieces.length > 1 ? 'peças' : 'peça'} selecionada${selectedPieces.length > 1 ? 's' : ''}`}</Text>
+          </TouchableOpacity>
+        )}
+      </Animated.View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={filterModalVisible}
+        onRequestClose={() => {
+          setFilterModalVisible(!filterModalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Filtros</Text>
+              <TouchableOpacity onPress={() => setFilterModalVisible(false)}>
+                <Image
+                  source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131880234996727860/close.png' }}
+                  style={{ width: 24, height: 24 }} // Aumenta o tamanho do ícone X
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.modalSubtitle}>Categoria:</Text>
+            <View style={styles.filterOptions}>
+              {categories.map(category => (
+                <TouchableOpacity
+                  key={category}
+                  style={[styles.filterButton, { justifyContent: 'center' }]} // Ajusta o estilo do botão
+                  onPress={() => handleFilterSelect('categories', category)}
+                >
+                  <Text style={styles.filterText}>{category}</Text>
+                  {filter.categories.includes(category) && (
+                    <Image
+                      source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1132890835923513425/filter-list_1.png' }}
+                      style={{ width: 18, height: 18, position: 'absolute', right: 10 }} // Ajusta o ícone de filtro
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={styles.modalSubtitle}>Marca:</Text>
+            <View style={styles.filterOptions}>
+              {brands.map(brand => (
+                <TouchableOpacity
+                  key={brand}
+                  style={[styles.filterButton, { justifyContent: 'center' }]} // Ajusta o estilo do botão
+                  onPress={() => handleFilterSelect('brands', brand)}
+                >
+                  <Text style={styles.filterText}>{brand}</Text>
+                  {filter.brands.includes(brand) && (
+                    <Image
+                      source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1132890835923513425/filter-list_1.png' }}
+                      style={{ width: 18, height: 18, position: 'absolute', right: 10 }} // Ajusta o ícone de filtro
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={styles.modalSubtitle}>Estado:</Text>
+            <View style={styles.filterOptions}>
+              {states.map(state => (
+                <TouchableOpacity
+                  key={state}
+                  style={[styles.filterButton, { justifyContent: 'center' }]} // Ajusta o estilo do botão
+                  onPress={() => handleFilterSelect('states', state)}
+                >
+                  <Text style={styles.filterText}>{state}</Text>
+                  {filter.states.includes(state) && (
+                    <Image
+                      source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1132890835923513425/filter-list_1.png' }}
+                      style={{ width: 18, height: 18, position: 'absolute', right: 10 }} // Ajusta o ícone de filtro
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View style={styles.filterActions}>
+              <TouchableOpacity
+                style={styles.clearFilterButton}
+                onPress={() => setFilter({ categories: [], brands: [], states: [] })}
+              >
+                <Text style={styles.clearFilterText}>Limpar Filtros</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.doneButton}
+                onPress={() => setFilterModalVisible(false)}
+              >
+                <Text style={styles.doneButtonText}>Concluído</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+
+function HelpScreen({ navigation }) {
+  const questions = [
+    {
+      id: 1,
+      question: 'Como faço para manter minha esteira em boas condições?',
+      answer: 'Aqui está a resposta para a pergunta 1...'
+    },
+    {
+      id: 2,
+      question: 'Qual é a melhor maneira de limpar minha máquina de academia?',
+      answer: 'Aqui está a resposta para a pergunta 2...'
+    },
+  ];
+
+  const Separator = () => <View style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginVertical: 20 }} />;
+
+  return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: 'white', padding: 28 }}>
+      {questions.map(({ id, question, answer }) => (
+        <View key={id}>
+          <Separator />
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('QuestionScreen', { question, answer })}>
+            <Text style={styles.buttonTitle}>{question}</Text>
+            <Image
+              source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
+              style={{ marginLeft: 'auto', width: 20, height: 20 }}
+            />
+          </TouchableOpacity>
+        </View>
+      ))}
+      <Separator />
+    </ScrollView>
+  );
+}
+
+function QuestionScreen({ route }) {
+  const { question, answer } = route.params;
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', padding: 28 }}>
+      <Text style={{ fontSize: 20, marginBottom: 20, fontFamily: 'Poppins_600SemiBold', textAlign: 'center' }}>{question}</Text>
+      <Text style={{ fontFamily: 'Poppins_400Regular' }}>{answer}</Text>
+    </View>
+  );
+}
+
+function MyTabBar({ state, descriptors, navigation }) {
+  const icons = {
+    'início': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131682413240668261/home_3.png',
+    'equipamentos': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660399842959370/piece.png',
+    'vendas': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131820630321410108/bolt.png',
+    'ajuda': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png'
+  };
+
+  return (
+    <View style={{ flexDirection: 'row', height: 80 }}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label = options.tabBarLabel || options.title || route.name;
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({ type: 'tabPress', target: route.key });
+          if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
+        };
+
+        const onLongPress = () => navigation.emit({ type: 'tabLongPress', target: route.key });
+        const icon = icons[route.name];
+
+        return (
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            onLongPress={onLongPress}
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center', borderTopColor: isFocused ? '#FB5F21' : 'rgba(0, 0, 0, 0.1)', borderTopWidth: 2, opacity: isFocused ? 1 : 0.5 }}
+          >
+            <Image source={{ uri: icon }} style={{ width: 28, height: 28 }} />
+            <Text style={{ letterSpacing: -.4, fontSize: 11.5, fontFamily: 'Poppins_600SemiBold', color: isFocused ? 'black' : '#222' }}>
+              {label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+function HelpStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Ajuda"
+        component={HelpScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="QuestionScreen"
+        component={QuestionScreen}
+        options={{ headerShown: false }}
+      />
+
+    </Stack.Navigator>
+  );
+}
+
+
+export default function App() {
+  let [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return <RNText>Loading...</RNText>;
+  }
+
+  return (
+    <NavigationContainer>
+      <Tab.Navigator tabBar={(props) => <MyTabBar {...props} />}>
+        <Tab.Screen name="início" component={HomeScreen}
+          options={{
+            headerStyle: {
+              borderBottomWidth: 0,
+            },
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitleStyle: {
+              fontFamily: 'Poppins_600SemiBold',
+            },
+          }}
+        />
+        <Tab.Screen name="equipamentos" component={EquipmentsScreen}
+          options={{
+            headerStyle: {
+              borderBottomWidth: 0,
+            },
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitleStyle: {
+              fontFamily: 'Poppins_600SemiBold',
+            },
+          }}
+        />
+        <Tab.Screen name="vendas" component={PiecesScreen}
+          options={{
+            headerStyle: {
+              borderBottomWidth: 0,
+            },
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitleStyle: {
+              fontFamily: 'Poppins_600SemiBold',
+            },
+          }}
+        />
+        <Tab.Screen name="ajuda" component={HelpStack}
+          options={{
+            headerStyle: {
+              borderBottomWidth: 0,
+            },
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitleStyle: {
+              fontFamily: 'Poppins_600SemiBold',
+            },
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+  buttonTitle: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 15,
+  },
+  buttonText: {
+    fontFamily: "Poppins_400Regular",
+    fontSize: 12,
+    color: 'rgba(0, 0, 0, 0.6)',
+  },
+
+  // Pieces
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    marginTop: 10,
+  },
+  filterOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FB5F21',
+    borderRadius: 50,
+    marginVertical: 5,
+    padding: 10,
+    backgroundColor: 'white',
+    width: '48%',
+  },
+  filterButtonActive: {
+    backgroundColor: '#FB5F21',
+  },
+  filterText: {
+    color: '#000',
+    fontFamily: 'Poppins_400Regular',
+  },
+  filterTextActive: {
+    color: '#fff',
+    fontFamily: 'Poppins_400Regular',
+  },
+  filterActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  clearFilterButton: {
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#FB5F21',
+    width: '48%',
+  },
+  clearFilterText: {
+    color: '#FB5F21',
+    textAlign: 'center',
+    fontFamily: 'Poppins_400Regular',
+  },
+  doneButton: {
+    backgroundColor: '#FB5F21',
+    borderRadius: 50,
+    padding: 10,
+    width: '48%',
+  },
+  doneButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontFamily: 'Poppins_400Regular',
+  },
+});
