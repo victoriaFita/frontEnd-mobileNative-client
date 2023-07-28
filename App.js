@@ -63,13 +63,17 @@ function HomeScreen({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', padding: 28 }}>
-      <View style={{ borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.1)', borderRadius: 12, padding: 20 }}>
+      <View style={{ borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.1)', borderRadius: 12, padding: 20, alignItems: "center" }}>
         <Text style={{ fontSize: 20, marginBottom: 20, fontFamily: 'Poppins_600SemiBold', textAlign: 'center' }}>
           {greeting()} {name},
         </Text>
         <Text style={{ marginBottom: 20, fontFamily: 'Poppins_400Regular' }}>Aqui você pode solicitar nossos
           <Text style={{ fontFamily: "Poppins_600SemiBold", color: '#FB5F21' }}> Serviços de Assistência Técnica</Text> com facilidade e rapidez.
         </Text>
+        <Image
+          source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1133560243306102854/Default_a_person_running_2_125b848e-24ef-4e7c-9343-90168e449d12_0.png' }}
+          style={{ width: 200, height: 300 }}
+        />
         <Text style={{ fontFamily: "Poppins_400Regular" }}>Navegue pelo aplicativo e descubra todas as nossas opções de serviços.</Text>
       </View>
 
@@ -98,7 +102,7 @@ function HomeScreen({ navigation }) {
         />
         <View>
           <Text style={styles.buttonTitle}>Vendas</Text>
-          <Text style={styles.buttonText}>Equipamentos, vendas</Text>
+          <Text style={styles.buttonText}>Equipamentos, Peças, Produtos</Text>
         </View>
         <Image
           source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
@@ -263,7 +267,7 @@ function AssistenceScreen() {
         <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 16, color: 'black' }}>Data desejada: {desiredDate.toLocaleDateString()}</Text>
         <Image
           source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-          style={{ marginLeft: 'auto', width: 20, height: 20, marginRight: 10 }}
+          style={{ marginLeft: 'auto', width: 20, height: 20, marginRight: 15 }}
         />
       </TouchableOpacity>
       <DateTimePickerModal
@@ -435,7 +439,7 @@ function PiecesScreen() {
               <TouchableOpacity onPress={() => setFilterModalVisible(false)}>
                 <Image
                   source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131880234996727860/close.png' }}
-                  style={{ width: 24, height: 24 }} 
+                  style={{ width: 24, height: 24 }}
                 />
               </TouchableOpacity>
             </View>
@@ -444,7 +448,7 @@ function PiecesScreen() {
               {categories.map(category => (
                 <TouchableOpacity
                   key={category}
-                  style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.categories.includes(category) ? '#FB5F21' : 'transparent' }]} 
+                  style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.categories.includes(category) ? '#FB5F21' : 'transparent' }]}
                   onPress={() => handleFilterSelect('categories', category)}
                 >
                   <Text style={styles.filterText}>{category}</Text>
@@ -456,7 +460,7 @@ function PiecesScreen() {
               {brands.map(brand => (
                 <TouchableOpacity
                   key={brand}
-                  style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.brands.includes(brand) ? '#FB5F21' : 'transparent' }]} 
+                  style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.brands.includes(brand) ? '#FB5F21' : 'transparent' }]}
                   onPress={() => handleFilterSelect('brands', brand)}
                 >
                   <Text style={styles.filterText}>{brand}</Text>
@@ -468,7 +472,7 @@ function PiecesScreen() {
               {states.map(state => (
                 <TouchableOpacity
                   key={state}
-                  style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.states.includes(state) ? '#FB5F21' : 'transparent' }]} 
+                  style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.states.includes(state) ? '#FB5F21' : 'transparent' }]}
                   onPress={() => handleFilterSelect('states', state)}
                 >
                   <Text style={styles.filterText}>{state}</Text>
@@ -629,7 +633,7 @@ export default function App() {
             headerStyle: {
               borderBottomWidth: 0,
             },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
             headerTitleStyle: {
               fontFamily: 'Poppins_600SemiBold',
             },
@@ -640,7 +644,7 @@ export default function App() {
             headerStyle: {
               borderBottomWidth: 0,
             },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
             headerTitleStyle: {
               fontFamily: 'Poppins_600SemiBold',
             },
@@ -651,7 +655,7 @@ export default function App() {
             headerStyle: {
               borderBottomWidth: 0,
             },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
             headerTitleStyle: {
               fontFamily: 'Poppins_600SemiBold',
             },
@@ -662,7 +666,7 @@ export default function App() {
             headerStyle: {
               borderBottomWidth: 0,
             },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, // Adicione margem à esquerda e à direita aqui
+            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
             headerTitleStyle: {
               fontFamily: 'Poppins_600SemiBold',
             },
