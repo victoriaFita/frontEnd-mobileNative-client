@@ -6,6 +6,8 @@ import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } fr
 import { createStackNavigator } from '@react-navigation/stack';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
+import equipmentService from '../../services/equipments';
+
 function Text(props) {
     return <RNText {...props} style={[props.style, {}]} />;
   }
@@ -13,7 +15,18 @@ function Text(props) {
 export default function HomeScreen({ navigation }) {
     const [name, setName] = useState('Augusto Vice');
     const [cep, setCep] = useState('89210-680');
-  
+    const [equipments, setEquipments] = useState([]);
+
+    useEffect(async () => {
+      const data = await equipmentService.getAllEquipments();
+      setEquipments(data);
+    }, []);
+
+    async function updateEquipments() {
+      const data = await equipmentService.getAllEquipments();
+      setEquipments(data);
+    }
+
     const handleWhatsAppRedirect = async () => {
       let location = '';
       if (cep) {
@@ -63,6 +76,10 @@ export default function HomeScreen({ navigation }) {
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', padding: 28 }}>
         <View style={{ borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.1)', borderRadius: 12, padding: 20, alignItems: "center" }}>
+        {equipments.map((equipment) => (
+        <Text key={equipment.id}>{equipment.name}</Text>
+      ))}
+      <Button title="Atualizar" onPress={() => updateGenres()} />
           <Text style={{ fontSize: 20, marginBottom: 20, fontFamily: 'Poppins_600SemiBold', textAlign: 'center' }}>
             {greeting()} {name},
           </Text>

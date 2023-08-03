@@ -1,4 +1,7 @@
-import axios from "axios"
+import axios from 'axios'
 
-axios.defaults.baseURL = "http://localhost:8000"
-// axios.defaults.baseURL = "https://livraria-drf.herokuapp.com"
+const api = axios.create({
+  baseURL: 'http://192.168.4.231:19000/'
+})
+
+export default api
