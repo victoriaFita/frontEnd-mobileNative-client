@@ -76,10 +76,6 @@ export default function HomeScreen({ navigation }) {
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', padding: 28 }}>
         <View style={{ borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.1)', borderRadius: 12, padding: 20, alignItems: "center" }}>
-        {equipments.map((equipment) => (
-        <Text key={equipment.id}>{equipment.name}</Text>
-      ))}
-      <Button title="Atualizar" onPress={() => updateGenres()} />
           <Text style={{ fontSize: 20, marginBottom: 20, fontFamily: 'Poppins_600SemiBold', textAlign: 'center' }}>
             {greeting()} {name},
           </Text>

@@ -5,15 +5,24 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { createStackNavigator } from '@react-navigation/stack';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import equipmentService from '../../services/equipments';
 
 function Text(props) {
     return <RNText {...props} style={[props.style, {}]} />;
-  }
+}
 
 export default function PiecesScreen() {
-    const categories = ['Equipamento', 'Peça', 'Produto'];
-    const brands = ['Athletic', 'Gold', 'Muscle and Motion'];
+  const categories = ['Equipamento', 'Peça', 'Produto'];
     const states = ['Novo', 'Semi-novo'];
+  const [equipments, setEquipments] = useState([]);
+  const [brands, setBrands] = useState([]);
+
+  useEffect(async () => {
+    const data = await equipmentService.getAllEquipments();
+    setEquipments(data);
+    const uniqueBrands = [...new Set(data.map(equipment => equipment.brand))];
+    setBrands(uniqueBrands);
+  }, []);
   
     const pieces = Array(10).fill().map((_, i) => ({
       id: i,
@@ -151,54 +160,55 @@ export default function PiecesScreen() {
                   />
                 </TouchableOpacity>
               </View>
+              <Text style={styles.modalDescription}>Selecione os filtros que deseja aplicar. Você pode selecionar mais de um por vez.</Text>
               <Text style={styles.modalSubtitle}>Categoria:</Text>
-              <View style={styles.filterOptions}>
+              <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                 {categories.map(category => (
                   <TouchableOpacity
                     key={category}
-                    style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.categories.includes(category) ? '#FB5F21' : 'transparent' }]}
+                    style={[styles.filterButton, { backgroundColor: filter.categories.includes(category) ? '#FB5F21' : '#E5E5E5' }]}
                     onPress={() => handleFilterSelect('categories', category)}
                   >
-                    <Text style={styles.filterText}>{category}</Text>
+                    <Text style={[styles.filterText, { color: filter.categories.includes(category) ? '#FFFFFF' : '#000000' }]}>{category}</Text>
                   </TouchableOpacity>
                 ))}
-              </View>
+              </ScrollView>
               <Text style={styles.modalSubtitle}>Marca:</Text>
-              <View style={styles.filterOptions}>
+              <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                 {brands.map(brand => (
                   <TouchableOpacity
                     key={brand}
-                    style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.brands.includes(brand) ? '#FB5F21' : 'transparent' }]}
+                    style={[styles.filterButton, { backgroundColor: filter.brands.includes(brand) ? '#FB5F21' : '#E5E5E5' }]}
                     onPress={() => handleFilterSelect('brands', brand)}
                   >
-                    <Text style={styles.filterText}>{brand}</Text>
+                    <Text style={[styles.filterText, { color: filter.brands.includes(brand) ? '#FFFFFF' : '#000000' }]}>{brand}</Text>
                   </TouchableOpacity>
                 ))}
-              </View>
+              </ScrollView>
               <Text style={styles.modalSubtitle}>Estado:</Text>
-              <View style={styles.filterOptions}>
+              <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                 {states.map(state => (
                   <TouchableOpacity
                     key={state}
-                    style={[styles.filterButton, { justifyContent: 'center', backgroundColor: filter.states.includes(state) ? '#FB5F21' : 'transparent' }]}
+                    style={[styles.filterButton, { backgroundColor: filter.states.includes(state) ? '#FB5F21' : '#E5E5E5' }]}
                     onPress={() => handleFilterSelect('states', state)}
                   >
-                    <Text style={styles.filterText}>{state}</Text>
+                    <Text style={[styles.filterText, { color: filter.states.includes(state) ? '#FFFFFF' : '#000000' }]}>{state}</Text>
                   </TouchableOpacity>
                 ))}
-              </View>
+              </ScrollView>
               <View style={styles.filterActions}>
+                <TouchableOpacity
+                  style={styles.applyFilterButton}
+                  onPress={() => setFilterModalVisible(false)}
+                >
+                  <Text style={styles.applyFilterText}>Aplicar filtros</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.clearFilterButton}
                   onPress={() => setFilter({ categories: [], brands: [], states: [] })}
                 >
-                  <Text style={styles.clearFilterText}>Limpar Filtros</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.doneButton}
-                  onPress={() => setFilterModalVisible(false)}
-                >
-                  <Text style={styles.doneButtonText}>Concluído</Text>
+                  <Text style={styles.clearFilterText}>Limpar filtros</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -206,10 +216,9 @@ export default function PiecesScreen() {
         </Modal>
       </View>
     );
-  }
-  
+}
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     button: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -245,6 +254,15 @@ export default function PiecesScreen() {
     modalTitle: {
       fontSize: 18,
       fontFamily: 'Poppins_600SemiBold',
+    textAlign: 'left',
+  },
+  modalDescription: {
+    paddingTop: 7,
+    fontSize: 12,
+    fontFamily: 'Poppins_400Regular',
+    color: 'rgba(0, 0, 0, 0.6)',
+    marginBottom: 10,
+    textAlign: 'left',
     },
     modalSubtitle: {
       fontSize: 14,
@@ -253,58 +271,50 @@ export default function PiecesScreen() {
     },
     filterOptions: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
       justifyContent: 'space-between',
+      marginBottom: 10,
     },
-    filterButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: '#FB5F21',
+  filterButton: {
       borderRadius: 50,
       marginVertical: 5,
       padding: 10,
-      backgroundColor: 'white',
-      width: '48%',
+      marginRight: 10,
+      minWidth: 80,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
-    filterButtonActive: {
-      backgroundColor: '#FB5F21',
-    },
-    filterText: {
-      color: '#000',
+  filterText: {
       fontFamily: 'Poppins_400Regular',
-    },
-    filterTextActive: {
-      color: '#fff',
-      fontFamily: 'Poppins_400Regular',
+      textAlign: 'center',
     },
     filterActions: {
-      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: "center",
+      flexDirection: 'column',
       justifyContent: 'space-between',
-      marginTop: 10,
+      marginTop: 20,
     },
     clearFilterButton: {
       backgroundColor: 'white',
       borderRadius: 50,
       padding: 10,
-      borderWidth: 1,
-      borderColor: '#FB5F21',
-      width: '48%',
+      marginBottom: 20,
     },
     clearFilterText: {
       color: '#FB5F21',
       textAlign: 'center',
       fontFamily: 'Poppins_400Regular',
     },
-    doneButton: {
+  applyFilterButton: {
       backgroundColor: '#FB5F21',
       borderRadius: 50,
-      padding: 10,
-      width: '48%',
+      width: 240,
+      padding: 12,
+      marginBottom: 20,
     },
-    doneButtonText: {
+  applyFilterText: {
       color: '#fff',
       textAlign: 'center',
       fontFamily: 'Poppins_400Regular',
     },
-  });
+});
