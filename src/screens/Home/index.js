@@ -6,6 +6,8 @@ import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } fr
 import { createStackNavigator } from '@react-navigation/stack';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
+import equipmentService from '../../services/equipments';
+
 function Text(props) {
     return <RNText {...props} style={[props.style, {}]} />;
   }
@@ -13,7 +15,18 @@ function Text(props) {
 export default function HomeScreen({ navigation }) {
     const [name, setName] = useState('Augusto Vice');
     const [cep, setCep] = useState('89210-680');
-  
+    const [equipments, setEquipments] = useState([]);
+
+    useEffect(async () => {
+      const data = await equipmentService.getAllEquipments();
+      setEquipments(data);
+    }, []);
+
+    async function updateEquipments() {
+      const data = await equipmentService.getAllEquipments();
+      setEquipments(data);
+    }
+
     const handleWhatsAppRedirect = async () => {
       let location = '';
       if (cep) {
