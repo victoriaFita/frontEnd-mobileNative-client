@@ -11,6 +11,7 @@ import Assistance from './src/screens/Assistance';
 import Help from './src/screens/Help';
 import Pieces from './src/screens/Pieces';
 import Profile from './src/screens/Profile';
+import LoginScreen from './src/screens/Account/Login';
 
 import HelpStack from './src/screens/Help';
 
@@ -150,22 +151,23 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen 
           name="Profile" 
           component={Profile} 
           options={({ navigation }) => ({
             headerShown: true,
-            headerTitle: '', // Remove the title
-            headerStyle: { height: 80 }, // Increase the header height
+            headerTitle: '', 
+            headerStyle: { height: 80 }, 
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
-                style={{ marginLeft: 20, marginBottom: -25 }} // Adjust the position
+                style={{ marginLeft: 20, marginBottom: -25 }} 
               >
                 <Image
                   source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1136848344396861472/back-arrow.png' }}
-                  style={{ width: 30, height: 30 }} // Increase the size
+                  style={{ width: 30, height: 30 }} 
                 />
               </TouchableOpacity>
             ),

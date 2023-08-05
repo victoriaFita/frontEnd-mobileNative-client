@@ -13,7 +13,7 @@ const [user, setUser] = useState(null);
 useEffect(() => {
     const fetchUser = async () => {
       const users = await userService.getAllUsers();
-      // Aqui estou assumindo que você quer pegar o primeiro usuário da lista
+      // primeiro usuário da lista
       setUser(users[0]);
     };
   

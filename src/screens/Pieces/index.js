@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
       backgroundColor: 'white',
-      padding: 30, // Aumentar o padding para fazer o modal um pouco maior
+      padding: 30, 
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,
     },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 20, // Adicionar margem para distanciar o título "Filtros" do topo do modal
+      marginBottom: 20,
     },
     modalTitle: {
       fontSize: 18,
@@ -283,9 +283,9 @@ const styles = StyleSheet.create({
     filterButton: {
       borderRadius: 50,
       marginVertical: 5,
-      padding: 8, // Diminuir o padding para diminuir o tamanho das opções de filtro
+      padding: 8,
       marginRight: 10,
-      minWidth: 65, // Diminuir o minWidth para diminuir o tamanho das opções de filtro
+      minWidth: 65,
       justifyContent: 'center',
       alignItems: 'center',
 
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     clearFilterButton: {
       backgroundColor: 'white',
       borderRadius: 50,
-      padding: 15, // Aumentar o padding para aumentar o tamanho do botão de limpar filtros
+      padding: 15, 
       marginBottom: 20,
   },
 
@@ -317,8 +317,8 @@ const styles = StyleSheet.create({
     applyFilterButton: {
       backgroundColor: '#FB5F21',
       borderRadius: 50,
-      width: 280, // Aumentar a largura para aumentar o tamanho do botão de aplicar filtros
-      padding: 15, // Aumentar o padding para aumentar o tamanho do botão de aplicar filtros
+      width: 280, 
+      padding: 15,
       marginBottom: 20,
   },
 
