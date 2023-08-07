@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import userService from '../../../services/users';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+
+  const parseJwt = (token) => {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
     const data = await userService.login(email, password);
     if (data.access) {
+      const {user_id} = parseJwt(data.access)
+      AsyncStorage.setItem('userId', user_id)
       navigation.replace('Main');
     } else {
       // handle login error
