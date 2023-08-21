@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import userService from '../../../services/users';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { decode as atob } from 'base-64'
+
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -12,7 +14,7 @@ export default function LoginScreen({ navigation }) {
     try {
       return JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
-      return null;
+      return e;
     }
   };
 

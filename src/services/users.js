@@ -16,7 +16,8 @@ class UserService {
   }
   async login(email, password) {
     const response = await api.post('/api/login/', { email, password });
-    if (response.data && response.data.user && response.data.user.id) {
+    console.log(response.data)
+    if (response.data && response.data?.user && response.data?.user?.id) {
       await AsyncStorage.setItem('accessToken', response.data.access);
       await AsyncStorage.setItem('userId', String(response.data.user.id));
     }
