@@ -5,21 +5,42 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { createStackNavigator } from '@react-navigation/stack';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import equipmentService from '../../services/equipments';
+import userService from '../../services/users';
+
 
 function Text(props) {
-    return <RNText {...props} style={[props.style, {}]} />;
-  }
+  return <RNText {...props} style={[props.style, {}]} />;
+}
 
 export default function HomeScreen({ navigation }) {
-    const [name, setName] = useState('Augusto Vice');
-    const [cep, setCep] = useState('89210-680');
-    const [equipments, setEquipments] = useState([]);
+  const [name, setName] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [cep, setCep] = useState('89210-680');
+  const [equipments, setEquipments] = useState([]);
 
-    useEffect(async () => {
-      const data = await equipmentService.getAllEquipments();
-      setEquipments(data);
+  useEffect(() => {
+    async function fetchUser() {
+      const userId = await AsyncStorage.getItem('userId');
+      console.log('User ID:', userId);
+      if (userId !== null) {
+        const user = await userService.getUserById(userId);
+        setName(user.first_name + ' ' + user.last_name);
+        console.log('Name:', user.first_name + ' ' + user.last_name);
+      }
+    }
+    fetchUser();
+  }, []);
+  
+  
+
+    useEffect(() => {
+      async function fetchEquipments() {
+        const data = await equipmentService.getAllEquipments();
+        setEquipments(data);
+      }
+      fetchEquipments();
     }, []);
 
     async function updateEquipments() {
@@ -87,6 +108,9 @@ export default function HomeScreen({ navigation }) {
             style={{ width: 200, height: 300 }}
           />
           <Text style={{ fontFamily: "Poppins_400Regular" }}>Navegue pelo aplicativo e descubra todas as nossas opções de serviços.</Text>
+                      <Text style={{ fontSize: 20, marginBottom: 20, fontFamily: 'Poppins_600SemiBold', textAlign: 'center' }}>
+                      {name} ({cpf})
+                      </Text>
         </View>
   
   

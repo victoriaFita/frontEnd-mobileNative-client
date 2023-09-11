@@ -17,12 +17,17 @@ export default function PiecesScreen() {
   const [equipments, setEquipments] = useState([]);
   const [brands, setBrands] = useState([]);
 
-  useEffect(async () => {
-    const data = await equipmentService.getAllEquipments();
-    setEquipments(data);
-    const uniqueBrands = [...new Set(data.map(equipment => equipment.brand))];
-    setBrands(uniqueBrands);
-  }, []);
+  useEffect(() => {
+    const fetchEquipments = async () => {
+        const data = await equipmentService.getAllEquipments();
+        setEquipments(data);
+        const uniqueBrands = [...new Set(data.map(equipment => equipment.brand))];
+        setBrands(uniqueBrands);
+    };
+
+    fetchEquipments();
+}, []);
+
   
     const pieces = Array(10).fill().map((_, i) => ({
       id: i,
@@ -161,7 +166,7 @@ export default function PiecesScreen() {
                 </TouchableOpacity>
               </View>
               <Text style={styles.modalDescription}>Selecione os filtros que deseja aplicar. Você pode selecionar mais de um por vez.</Text>
-              <Text style={styles.modalSubtitle}>Categoria:</Text>
+              <Text style={styles.modalSubtitle}>Por categoria:</Text>
               <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                 {categories.map(category => (
                   <TouchableOpacity
@@ -173,7 +178,7 @@ export default function PiecesScreen() {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              <Text style={styles.modalSubtitle}>Marca:</Text>
+              <Text style={styles.modalSubtitle}>Por marca:</Text>
               <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                 {brands.map(brand => (
                   <TouchableOpacity
@@ -185,7 +190,7 @@ export default function PiecesScreen() {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              <Text style={styles.modalSubtitle}>Estado:</Text>
+              <Text style={styles.modalSubtitle}>Por estado:</Text>
               <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                 {states.map(state => (
                   <TouchableOpacity
@@ -242,7 +247,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
       backgroundColor: 'white',
-      padding: 20,
+      padding: 30, 
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,
     },
@@ -250,6 +255,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      marginBottom: 20,
     },
     modalTitle: {
       fontSize: 18,
@@ -274,18 +280,20 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       marginBottom: 10,
     },
-  filterButton: {
+    filterButton: {
       borderRadius: 50,
       marginVertical: 5,
-      padding: 10,
+      padding: 8,
       marginRight: 10,
-      minWidth: 80,
+      minWidth: 65,
       justifyContent: 'center',
       alignItems: 'center',
+
     },
   filterText: {
       fontFamily: 'Poppins_400Regular',
       textAlign: 'center',
+      fontSize: 13.5,
     },
     filterActions: {
       alignItems: 'center',
@@ -297,24 +305,26 @@ const styles = StyleSheet.create({
     clearFilterButton: {
       backgroundColor: 'white',
       borderRadius: 50,
-      padding: 10,
+      padding: 15, 
       marginBottom: 20,
-    },
+  },
+
     clearFilterText: {
       color: '#FB5F21',
       textAlign: 'center',
       fontFamily: 'Poppins_400Regular',
     },
-  applyFilterButton: {
+    applyFilterButton: {
       backgroundColor: '#FB5F21',
       borderRadius: 50,
-      width: 240,
-      padding: 12,
+      width: 280, 
+      padding: 15,
       marginBottom: 20,
-    },
+  },
+
   applyFilterText: {
       color: '#fff',
       textAlign: 'center',
-      fontFamily: 'Poppins_400Regular',
+      fontFamily: 'Poppins_600SemiBold',
     },
 });

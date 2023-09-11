@@ -10,12 +10,14 @@ import Home from './src/screens/Home';
 import Assistance from './src/screens/Assistance';
 import Help from './src/screens/Help';
 import Pieces from './src/screens/Pieces';
+import Profile from './src/screens/Profile';
+import LoginScreen from './src/screens/Account/Login';
 
+import HelpStack from './src/screens/Help';
 
 function Text(props) {
   return <RNText {...props} style={[props.style, {}]} />;
 }
-
 
 function MyTabBar({ state, descriptors, navigation }) {
   const icons = {
@@ -26,7 +28,7 @@ function MyTabBar({ state, descriptors, navigation }) {
   };
 
   return (
-    <View style={{ flexDirection: 'row', height: 80 }}>
+    <View style={{ flexDirection: 'row', height: 80, backgroundColor: 'white' }}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label = options.tabBarLabel || options.title || route.name;
@@ -64,6 +66,76 @@ function MyTabBar({ state, descriptors, navigation }) {
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+function TabNavigator() {
+  return (
+    <Tab.Navigator
+      tabBar={(props) => <MyTabBar {...props} />}
+      screenOptions={({ navigation }) => ({
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={{ marginRight: 10 }}
+          >
+            <Image
+              source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1103168510403805244/317769461_531223468937840_7323651060704758280_n.png' }}
+              style={{ width: 40, height: 40, borderRadius: 25, marginRight: 20, marginTop: 10 }}
+            />
+          </TouchableOpacity>
+        ),
+      })}
+    >
+      <Tab.Screen name="início" component={Home}
+        options={{
+          headerStyle: {
+            borderBottomWidth: 0,
+            height: 110,
+          },
+          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
+          headerTitleStyle: {
+            fontFamily: 'Poppins_600SemiBold',
+          },
+        }}
+      />
+
+      <Tab.Screen name="assistência" component={Assistance}
+        options={{
+          headerStyle: {
+            borderBottomWidth: 0,
+            height: 110,
+          },
+          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
+          headerTitleStyle: {
+            fontFamily: 'Poppins_600SemiBold',
+          },
+        }}
+      />
+      <Tab.Screen name="vendas" component={Pieces}
+        options={{
+          headerStyle: {
+            borderBottomWidth: 0,
+            height: 110,
+          },
+          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
+          headerTitleStyle: {
+            fontFamily: 'Poppins_600SemiBold',
+          },
+        }}
+      />
+      <Tab.Screen name="ajuda" component={Help}
+        options={{
+          headerStyle: {
+            borderBottomWidth: 0,
+            height: 110,
+          },
+          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
+          headerTitleStyle: {
+            fontFamily: 'Poppins_600SemiBold',
+          },
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -78,52 +150,30 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator tabBar={(props) => <MyTabBar {...props} />}>
-        <Tab.Screen name="início" component={Home}
-          options={{
-            headerStyle: {
-              borderBottomWidth: 0,
-            },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
-            headerTitleStyle: {
-              fontFamily: 'Poppins_600SemiBold',
-            },
-          }}
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Main" component={TabNavigator} />
+        <Stack.Screen 
+          name="Profile" 
+          component={Profile} 
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: '', 
+            headerStyle: { height: 80 }, 
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={{ marginLeft: 20, marginBottom: -25 }} 
+              >
+                <Image
+                  source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1136848344396861472/back-arrow.png' }}
+                  style={{ width: 30, height: 30 }} 
+                />
+              </TouchableOpacity>
+            ),
+          })}
         />
-        <Tab.Screen name="assistência" component={Assistance}
-          options={{
-            headerStyle: {
-              borderBottomWidth: 0,
-            },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
-            headerTitleStyle: {
-              fontFamily: 'Poppins_600SemiBold',
-            },
-          }}
-        />
-        <Tab.Screen name="vendas" component={Pieces}
-          options={{
-            headerStyle: {
-              borderBottomWidth: 0,
-            },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
-            headerTitleStyle: {
-              fontFamily: 'Poppins_600SemiBold',
-            },
-          }}
-        />
-        <Tab.Screen name="ajuda" component={Help}
-          options={{
-            headerStyle: {
-              borderBottomWidth: 0,
-            },
-            headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />, 
-            headerTitleStyle: {
-              fontFamily: 'Poppins_600SemiBold',
-            },
-          }}
-        />
-      </Tab.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

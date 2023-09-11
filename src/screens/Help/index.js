@@ -7,6 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 
+import ProfileScreen from '../Profile';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -74,7 +76,6 @@ export default function HelpStack() {
         component={QuestionScreen}
         options={{ headerShown: false }}
         />
-
     </Stack.Navigator>
     );
 }
