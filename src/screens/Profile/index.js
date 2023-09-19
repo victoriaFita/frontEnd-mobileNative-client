@@ -9,14 +9,15 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import userService from '../../services/users';
 
 export default function ProfileScreen({ navigation }) {
-const [user, setUser] = useState(null);
-useEffect(() => {
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
     const fetchUser = async () => {
       const users = await userService.getAllUsers();
-      // primeiro usuário da lista
+      // first user from the list
       setUser(users[0]);
     };
-  
+    
     fetchUser();
   }, []);
   
@@ -30,14 +31,13 @@ useEffect(() => {
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
-
   
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', paddingTop: 0, paddingBottom: 28, paddingHorizontal: 28 }}>
       <View style={styles.container}>
         <Image
-          source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1103168510403805244/317769461_531223468937840_7323651060704758280_n.png' }}
+          source={{ uri: user && user.image ? user.image.url : 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
           style={styles.profileImage}
         />
         <Text style={styles.title}>{user ? `${user.first_name} ${user.last_name}` : 'Loading...'}</Text>
