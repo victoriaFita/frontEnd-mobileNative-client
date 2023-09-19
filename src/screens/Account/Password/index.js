@@ -15,7 +15,13 @@ export default function ResetPasswordScreen({ navigation }) {
     }
 
     try {
-      const userId = await AsyncStorage.getItem('userId');
+    const userId = await AsyncStorage.getItem('userId');
+    console.log("UserID from AsyncStorage:", userId);        
+      if (!userId) {
+        Alert.alert("Erro", "Não foi possível recuperar as informações do usuário.");
+        return;
+      }
+
       const result = await userService.changePassword(userId, currentPassword, newPassword);
       if (result.success) {
         Alert.alert("Sucesso", "Senha alterada com sucesso!");
@@ -27,6 +33,7 @@ export default function ResetPasswordScreen({ navigation }) {
       Alert.alert("Erro", "Ocorreu um erro ao tentar alterar sua senha.");
     }
   };
+
 
   return (
     <View style={styles.container}>

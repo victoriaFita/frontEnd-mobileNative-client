@@ -5,14 +5,16 @@ class UserService {
     const response = await api.get('/users/');
     return response.data;
   }
-  
+
   async changePassword(userId, currentPassword, newPassword) {
-    const response = await api.patch(`/users/${userId}/change_password/`, {
+    const numericUserId = parseInt(userId, 10);
+    const response = await api.patch(`/users/${numericUserId}/change_password/`, {
       current_password: currentPassword,
       new_password: newPassword
     });
     return response.data;
   }
+
 
   async saveUser(user) {
     const response = await api.post('/users/', user);

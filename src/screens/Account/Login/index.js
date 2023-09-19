@@ -20,7 +20,7 @@ export default function LoginScreen({ navigation }) {
     const data = await userService.login(email, password);
     if (data.access) {
       const { user_id } = parseJwt(data.access);
-      AsyncStorage.setItem('userId', user_id);
+      AsyncStorage.setItem('userId', String(user_id));
       navigation.replace('Main');
     } else {
       Alert.alert("Erro", "Credenciais inválidas ou problema na conexão.");
