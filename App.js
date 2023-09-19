@@ -24,7 +24,7 @@ function MyTabBar({ state, descriptors, navigation }) {
     'início': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131682413240668261/home_3.png',
     'assistência': 'https://cdn.discordapp.com/attachments/1059425565330911284/1133460259608993853/repair-tool.png',
     'vendas': 'https://cdn.discordapp.com/attachments/1059425565330911284/1133459504109998220/shopping.png',
-    'ajuda': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png'
+    /*'ajuda': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png'*/
   };
 
   return (
@@ -121,7 +121,7 @@ function TabNavigator() {
           },
         }}
       />
-      <Tab.Screen name="ajuda" component={Help}
+      {/*<Tab.Screen name="ajuda" component={Help}
         options={{
           headerStyle: {
             borderBottomWidth: 0,
@@ -132,7 +132,7 @@ function TabNavigator() {
             fontFamily: 'Poppins_600SemiBold',
           },
         }}
-      />
+      />*/}
     </Tab.Navigator>
   );
 }

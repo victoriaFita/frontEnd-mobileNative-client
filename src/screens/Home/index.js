@@ -142,7 +142,7 @@ export default function HomeScreen({ navigation }) {
             style={{ marginLeft: 'auto', width: 20, height: 20 }}
           />
         </TouchableOpacity>
-        <View style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginVertical: 20 }} />
+        {/*<View style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginVertical: 20 }} />
         <Text style={{ marginTop: 20, fontSize: 16, fontFamily: "Poppins_600SemiBold" }}>Alguma dúvida? Confira nossa FAQ</Text>
         <View style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginVertical: 20 }} />
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ajuda')}>
@@ -155,7 +155,7 @@ export default function HomeScreen({ navigation }) {
             source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
             style={{ marginLeft: 'auto', width: 20, height: 20 }}
           />
-        </TouchableOpacity>
+    </TouchableOpacity>*/}
         <View style={{ width: '100%', height: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)', marginVertical: 20 }} />
         
       </ScrollView>
