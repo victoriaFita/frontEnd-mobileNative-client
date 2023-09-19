@@ -12,6 +12,7 @@ import Help from './src/screens/Help';
 import Pieces from './src/screens/Pieces';
 import Profile from './src/screens/Profile';
 import LoginScreen from './src/screens/Account/Login';
+import ResetPasswordScreen from './src/screens/Account/Password';
 
 import HelpStack from './src/screens/Help';
 
@@ -152,6 +153,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="ForgotPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen 
           name="Profile" 

@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Alert, Image } from 'react-native';
 import userService from '../../../services/users';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // error solve: https://stackoverflow.com/questions/42829838/react-native-atob-btoa-not-working-without-remote-js-debugging
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decode as atob } from 'base-64'
-
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
 
   const parseJwt = (token) => {
     try {
@@ -21,17 +19,21 @@ export default function LoginScreen({ navigation }) {
   const handleSubmit = async () => {
     const data = await userService.login(email, password);
     if (data.access) {
-      const {user_id} = parseJwt(data.access)
-      AsyncStorage.setItem('userId', user_id)
+      const { user_id } = parseJwt(data.access);
+      AsyncStorage.setItem('userId', user_id);
       navigation.replace('Main');
     } else {
-      // handle login error
+      Alert.alert("Erro", "Credenciais inválidas ou problema na conexão.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login Test</Text>
+      <Image 
+        source={{ uri: 'https://cdn.discordapp.com/attachments/1091506792900595863/1153760874822107216/victoria..png' }} 
+        style={styles.logo}
+      />
+      <Text style={styles.title}>Bem-vindo de volta!</Text>
       <TextInput
         style={styles.input}
         value={email}
@@ -42,12 +44,15 @@ export default function LoginScreen({ navigation }) {
         style={styles.input}
         value={password}
         onChangeText={setPassword}
-        placeholder="Password"
+        placeholder="Senha"
         secureTextEntry
       />
-      <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={handleSubmit} color="#FB5F21" />
-      </View>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Entrar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgotPassword}>Esqueceu sua senha?</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -57,7 +62,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 28,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
+  },
+  logo: {
+    alignSelf: 'center',
+    width: 300,
+    height: 100,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -77,9 +88,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     backgroundColor: 'white',
   },
-  buttonContainer: {
-    marginTop: 10,
+  button: {
+    backgroundColor: '#FB5F21',
+    paddingVertical: 15,
     borderRadius: 12,
-    overflow: 'hidden',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 16,
+  },
+  forgotPassword: {
+    color: '#FB5F21',
+    textAlign: 'center',
+    marginTop: 10,
+    fontFamily: 'Poppins_400Regular',
   },
 });

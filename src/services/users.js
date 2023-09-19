@@ -1,11 +1,16 @@
 import api from '../plugins/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
-import { dataURLToBlob } from 'blob-util';
-
 class UserService {
   async getAllUsers() {
     const response = await api.get('/users/');
+    return response.data;
+  }
+  
+  async changePassword(userId, currentPassword, newPassword) {
+    const response = await api.patch(`/users/${userId}/change_password/`, {
+      current_password: currentPassword,
+      new_password: newPassword
+    });
     return response.data;
   }
 
@@ -29,6 +34,11 @@ class UserService {
     return response.data;
   }
 
+  async logout() {
+    await AsyncStorage.removeItem('accessToken');
+    await AsyncStorage.removeItem('userId');
+  }
+
   async getUserInfo() {
     const accessToken = await AsyncStorage.getItem('accessToken');
     const response = await api.get('/users/', {
@@ -49,25 +59,19 @@ class UserService {
     const data = new FormData();
     const fileName = imageResponse.fileName || 'uploaded_image.jpg';
     const imageUri = imageResponse.uri;
-  
+
     if (!imageUri) {
       throw new Error('No image URI provided.');
     }
-  
-    console.log("Image details:", {
-      name: fileName,
-      type: imageResponse.type || 'image/jpeg',
-      uri: imageUri, 
-    });
-  
+
     data.append('file', {
       name: fileName,
       type: imageResponse.type || 'image/jpeg',
-      uri: imageUri, 
-  });
-  
+      uri: imageUri,
+    });
+
     const accessToken = await AsyncStorage.getItem('accessToken');
-    
+
     try {
       const response = await api.patch(`/users/${userId}/`, data, {
         headers: {
@@ -78,10 +82,9 @@ class UserService {
       console.log("Server response:", response.data);
     } catch (error) {
       console.error("Axios error:", error);
-      throw error; 
+      throw error;
     }
   }
-  
 }
 
 export default new UserService();

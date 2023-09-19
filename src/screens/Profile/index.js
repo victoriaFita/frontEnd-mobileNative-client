@@ -24,7 +24,6 @@ export default function ProfileScreen({ navigation }) {
       alert('Você precisa permitir o acesso à galeria para continuar!');
       return;
     }
-    
 
     let pickerResult = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
 
@@ -40,6 +39,11 @@ export default function ProfileScreen({ navigation }) {
       console.error('Failed to update image:', error);
       alert('Erro ao atualizar a imagem.');
     }
+  };
+
+  const handleLogout = async () => {
+    await userService.logout();
+    navigation.navigate('Login');
   };
 
   let [fontsLoaded] = useFonts({
@@ -62,51 +66,15 @@ export default function ProfileScreen({ navigation }) {
           />
         </TouchableOpacity>
         <Text style={styles.title}>{user ? `${user.first_name} ${user.last_name}` : 'Loading...'}</Text>
+        <Text style={styles.userInfo}>E-mail: {user?.email}</Text>
+        <Text style={styles.userInfo}>Telefone: {user?.telefone || 'Não informado'}</Text>
         <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1136840236559769672/profile.png' }}
-            style={styles.icon}
-          />
-          <View>
-            <Text style={styles.buttonTitle}>Minha Conta</Text>
-            <Text style={styles.buttonText}>Senha, CEP, E-mail, Telefone</Text>
-          </View>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-            style={styles.arrowIcon}
-          />
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
-        <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1136840032917930094/settings_4.png' }}
-            style={styles.icon}
-          />
-          <View>
-            <Text style={styles.buttonTitle}>Configurações</Text>
-            <Text style={styles.buttonText}>Notificações, Preferências</Text>
-          </View>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-            style={styles.arrowIcon}
-          />
+        <TouchableOpacity style={[styles.button, styles.buttonMargin]} onPress={() => navigation.navigate('ForgotPassword')}> 
+          <Text style={styles.buttonText}>Mudar Senha</Text>
         </TouchableOpacity>
-        <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png' }}
-            style={styles.icon}
-          />
-          <View>
-            <Text style={styles.buttonTitle}>Ajuda</Text>
-          </View>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-            style={styles.arrowIcon}
-          />
-        </TouchableOpacity>
-        <View style={styles.separator} />
       </View>
     </ScrollView>
   );
@@ -117,11 +85,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 20,
   },
   profileImage: {
     width: 100,
@@ -135,29 +98,31 @@ const styles = StyleSheet.create({
     fontSize: 21,
     marginBottom: 30,
   },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-  },
-  icon: {
-    width: 28,
-    height: 28,
-    marginRight: 10,
-  },
-  buttonTitle: {
-    fontFamily: "Poppins_600SemiBold",
+  userInfo: {
+    fontFamily: 'Poppins_400Regular',
     fontSize: 15,
+    marginBottom: 5,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 5,
+    marginTop: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   buttonText: {
-    fontFamily: "Poppins_400Regular",
-    fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.6)',
+    fontFamily: 'Poppins_600SemiBold',
+    color: 'white',
+    fontSize: 16,
   },
-  arrowIcon: {
-    marginLeft: 'auto',
-    width: 20,
-    height: 20,
+  buttonMargin: {
+    marginTop: 20,
   },
   separator: {
     width: '100%',
