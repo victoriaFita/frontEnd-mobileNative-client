@@ -1,26 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Animated, Modal, Button, Linking, TextInput } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { createStackNavigator } from '@react-navigation/stack';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import userService from '../../services/users';
 
 export default function ProfileScreen({ navigation }) {
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
     const fetchUser = async () => {
       const users = await userService.getAllUsers();
-      // first user from the list
       setUser(users[0]);
     };
-    
+
     fetchUser();
   }, []);
-  
+
+  const selectImage = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Você precisa permitir o acesso à galeria para continuar!');
+      return;
+    }
+    
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
+
+    if (pickerResult.cancelled || !pickerResult.assets || pickerResult.assets.length === 0) return;
+
+    const selectedImage = pickerResult.assets[0];
+
+    try {
+      await userService.updateUserImage(user.id, selectedImage);
+      const updatedUser = await userService.getUserById(user.id);
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Failed to update image:', error);
+      alert('Erro ao atualizar a imagem.');
+    }
+  };
 
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
@@ -31,15 +51,16 @@ export default function ProfileScreen({ navigation }) {
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
-  
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', paddingTop: 0, paddingBottom: 28, paddingHorizontal: 28 }}>
       <View style={styles.container}>
-        <Image
-          source={{ uri: user && user.image ? user.image.url : 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
-          style={styles.profileImage}
-        />
+        <TouchableOpacity onPress={selectImage}>
+          <Image
+            source={{ uri: user?.image?.url || 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
         <Text style={styles.title}>{user ? `${user.first_name} ${user.last_name}` : 'Loading...'}</Text>
         <View style={styles.separator} />
         <TouchableOpacity style={styles.button} onPress={() => {}}>

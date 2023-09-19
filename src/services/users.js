@@ -1,29 +1,34 @@
-import api from '../plugins/axios'
+import api from '../plugins/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+import { dataURLToBlob } from 'blob-util';
 
 class UserService {
   async getAllUsers() {
-    const response = await api.get('/users/')
-    return response.data
+    const response = await api.get('/users/');
+    return response.data;
   }
+
   async saveUser(user) {
-    const response = await api.post('/users/', user)
-    return response.data
+    const response = await api.post('/users/', user);
+    return response.data;
   }
+
   async deleteUser(user) {
-    const response = await api.delete(`/users/${user.id}/`)
-    return response.data
+    const response = await api.delete(`/users/${user.id}/`);
+    return response.data;
   }
+
   async login(email, password) {
     const response = await api.post('/api/login/', { email, password });
-    console.log(response.data)
+    console.log(response.data);
     if (response.data && response.data?.user && response.data?.user?.id) {
       await AsyncStorage.setItem('accessToken', response.data.access);
       await AsyncStorage.setItem('userId', String(response.data.user.id));
     }
     return response.data;
   }
-  
+
   async getUserInfo() {
     const accessToken = await AsyncStorage.getItem('accessToken');
     const response = await api.get('/users/', {
@@ -39,8 +44,44 @@ class UserService {
     console.log('User data:', response.data);
     return response.data;
   }
+
+  async updateUserImage(userId, imageResponse) {
+    const data = new FormData();
+    const fileName = imageResponse.fileName || 'uploaded_image.jpg';
+    const imageUri = imageResponse.uri;
   
+    if (!imageUri) {
+      throw new Error('No image URI provided.');
+    }
+  
+    console.log("Image details:", {
+      name: fileName,
+      type: imageResponse.type || 'image/jpeg',
+      uri: imageUri, 
+    });
+  
+    data.append('file', {
+      name: fileName,
+      type: imageResponse.type || 'image/jpeg',
+      uri: imageUri, 
+  });
+  
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    
+    try {
+      const response = await api.patch(`/users/${userId}/`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log("Server response:", response.data);
+    } catch (error) {
+      console.error("Axios error:", error);
+      throw error; 
+    }
+  }
   
 }
 
-export default new UserService()
+export default new UserService();
