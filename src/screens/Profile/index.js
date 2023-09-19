@@ -69,11 +69,11 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.userInfo}>E-mail: {user?.email}</Text>
         <Text style={styles.userInfo}>Telefone: {user?.telefone || 'Não informado'}</Text>
         <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.buttonMargin]} onPress={() => navigation.navigate('ForgotPassword')}> 
           <Text style={styles.buttonText}>Mudar Senha</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonLogout} onPress={handleLogout}>
+          <Text style={styles.buttonTextLogout}>Logout</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -104,25 +104,41 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 5,
-    marginTop: 15,
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
+    width: '100%',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 5,
+    marginVertical: 10,
+    backgroundColor: '#FB5F21',
   },
+  buttonLogout: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    borderRadius: 5,
+    marginVertical: 10,
+    backgroundColor: 'transparent',
+  },
+
   buttonText: {
+    flex: 1,
     fontFamily: 'Poppins_600SemiBold',
-    color: 'white',
     fontSize: 16,
+    color: 'white',
+    textAlign: 'center',
   },
-  buttonMargin: {
-    marginTop: 20,
+  buttonTextLogout: {
+    flex: 1,
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
   },
   separator: {
     width: '100%',
@@ -130,4 +146,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     marginVertical: 20,
   },
+  buttonMargin: {
+    marginTop: 10,
+  },
 });
+

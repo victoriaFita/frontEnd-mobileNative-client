@@ -33,7 +33,6 @@ export default function LoginScreen({ navigation }) {
         source={{ uri: 'https://cdn.discordapp.com/attachments/1091506792900595863/1153760874822107216/victoria..png' }} 
         style={styles.logo}
       />
-      <Text style={styles.title}>Bem-vindo de volta!</Text>
       <TextInput
         style={styles.input}
         value={email}
