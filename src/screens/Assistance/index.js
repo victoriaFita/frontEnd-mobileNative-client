@@ -140,7 +140,7 @@ export default function AssistenceScreen() {
                             value={brand}
                         />
                         <TextInput
-                            style={{ height: 60, borderColor: 'rgba(0, 0, 0, 0.1)', borderWidth: 1, marginBottom: 20, borderRadius: 12, paddingLeft: 10, fontFamily: 'Poppins_400Regular', fontSize: 16, color: 'black' }}
+                            style={{ height: 60, borderColor: 'rgba(0, 0, 0, 0.1)', borderWidth: 1, marginBottom: 20, borderRadius: 12, paddingLeft: 10, fontFamily: 'Poppins_400Regular', fontSize: 16, color: 'black', height: 250, textAlign: 'left' }}
                             placeholder="Descrição do Problema"
                             placeholderTextColor="rgba(0, 0, 0, 0.6)"
                             onChangeText={text => setProblemDescription(text)}
@@ -195,32 +195,55 @@ export default function AssistenceScreen() {
                             onChangeText={text => setCep(text)}
                             value={cep}
                         />
-                    </>
-                )}
-            </View>
-
-            {currentStep < 5 && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <TouchableOpacity onPress={handlePrevStep} style={{ padding: 10, borderRadius: 50, marginTop: 10, width: '48%', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', backgroundColor: 'transparent' }}>
-                        <Text>Voltar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={{ backgroundColor: '#FB5F21', padding: 10, borderRadius: 50, marginTop: 10, width: '48%', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}
-                        onPress={handleNextStep}>
-                        <Text style={{ color: 'white', fontSize: 16, fontFamily: "Poppins_400Regular" }}>Avançar</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {currentStep === 5 && (
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <TouchableOpacity 
                         style={{ backgroundColor: '#FB5F21', padding: 10, borderRadius: 50, marginTop: 10, width: '80%', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}
                         onPress={handleWhatsAppRedirect}>
                         <Text style={{ color: 'white', fontSize: 16, fontFamily: "Poppins_400Regular" }}>Orçamento via WhatsApp</Text>
                     </TouchableOpacity>
                 </View>
-            )}
+                    </>
+                )}
+            </View>
+
+            {currentStep < 6 && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TouchableOpacity 
+                    onPress={handlePrevStep} 
+                    style={{ 
+                        padding: 10, 
+                        borderRadius: 50, 
+                        marginTop: 10, 
+                        width: currentStep === 5 ? '100%' : '48%',  // Aqui é a alteração
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        alignSelf: 'center', 
+                        backgroundColor: 'transparent' 
+                    }}>
+                    <Text style={{ color: 'black', fontSize: 16, fontFamily: "Poppins_400Regular" }}>Voltar</Text>
+                </TouchableOpacity>
+                {currentStep < 5 && (
+                    <TouchableOpacity 
+                        style={{ 
+                            backgroundColor: '#FB5F21', 
+                            padding: 10, 
+                            borderRadius: 50, 
+                            marginTop: 10, 
+                            width: '48%', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            alignSelf: 'center' 
+                        }}
+                        onPress={handleNextStep}>
+                        <Text style={{ color: 'white', fontSize: 16, fontFamily: "Poppins_400Regular" }}>Avançar</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+        )}
+
+
+            
+
         </ScrollView>
     );
 }
