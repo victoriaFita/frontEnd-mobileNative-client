@@ -68,7 +68,6 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.title}>{user ? `${user.first_name} ${user.last_name}` : 'Loading...'}</Text>
         <Text style={styles.userInfo}>E-mail: {user?.email}</Text>
         <Text style={styles.userInfo}>Telefone: {user?.telefone || 'Não informado'}</Text>
-        <View style={styles.separator} />
         <TouchableOpacity style={[styles.button, styles.buttonMargin]} onPress={() => navigation.navigate('ForgotPassword')}> 
           <Text style={styles.buttonText}>Mudar Senha</Text>
         </TouchableOpacity>
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   buttonMargin: {
-    marginTop: 10,
+    marginTop: 70,
   },
 });
 
