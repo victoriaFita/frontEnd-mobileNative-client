@@ -12,6 +12,9 @@ import Help from './src/screens/Help';
 import Pieces from './src/screens/Pieces';
 import Profile from './src/screens/Profile';
 import LoginScreen from './src/screens/Account/Login';
+import ResetPasswordScreen from './src/screens/Account/Password';
+
+import userService from './src/services/users.js';
 
 import HelpStack from './src/screens/Help';
 
@@ -24,7 +27,6 @@ function MyTabBar({ state, descriptors, navigation }) {
     'início': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131682413240668261/home_3.png',
     'assistência': 'https://cdn.discordapp.com/attachments/1059425565330911284/1133460259608993853/repair-tool.png',
     'vendas': 'https://cdn.discordapp.com/attachments/1059425565330911284/1133459504109998220/shopping.png',
-    /*'ajuda': 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png'*/
   };
 
   return (
@@ -67,6 +69,17 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function TabNavigator() {
+  const [user, setUser] = useState(null); 
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await userService.getUserInfo();
+      setUser(currentUser[0]); // Ajuste para obter o usuário atualmente logado
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <Tab.Navigator
       tabBar={(props) => <MyTabBar {...props} />}
@@ -77,62 +90,24 @@ function TabNavigator() {
             style={{ marginRight: 10 }}
           >
             <Image
-              source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1103168510403805244/317769461_531223468937840_7323651060704758280_n.png' }}
+              source={{ uri: user?.image?.url || 'https://cdn.discordapp.com/attachments/1059425565330911284/1103168510403805244/317769461_531223468937840_7323651060704758280_n.png' }}
               style={{ width: 40, height: 40, borderRadius: 25, marginRight: 20, marginTop: 10 }}
             />
           </TouchableOpacity>
         ),
+        headerStyle: {
+            borderBottomWidth: 0,
+            height: 110,
+        },
+        headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
+        headerTitleStyle: {
+            fontFamily: 'Poppins_600SemiBold',
+        },
       })}
     >
-      <Tab.Screen name="início" component={Home}
-        options={{
-          headerStyle: {
-            borderBottomWidth: 0,
-            height: 110,
-          },
-          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
-          headerTitleStyle: {
-            fontFamily: 'Poppins_600SemiBold',
-          },
-        }}
-      />
-
-      <Tab.Screen name="assistência" component={Assistance}
-        options={{
-          headerStyle: {
-            borderBottomWidth: 0,
-            height: 110,
-          },
-          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
-          headerTitleStyle: {
-            fontFamily: 'Poppins_600SemiBold',
-          },
-        }}
-      />
-      <Tab.Screen name="vendas" component={Pieces}
-        options={{
-          headerStyle: {
-            borderBottomWidth: 0,
-            height: 110,
-          },
-          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
-          headerTitleStyle: {
-            fontFamily: 'Poppins_600SemiBold',
-          },
-        }}
-      />
-      {/*<Tab.Screen name="ajuda" component={Help}
-        options={{
-          headerStyle: {
-            borderBottomWidth: 0,
-            height: 110,
-          },
-          headerTitle: props => <RNText {...props} style={[props.style, { fontSize: 21, marginLeft: 10, marginTop: 10 }]} />,
-          headerTitleStyle: {
-            fontFamily: 'Poppins_600SemiBold',
-          },
-        }}
-      />*/}
+      <Tab.Screen name="início" component={Home} />
+      <Tab.Screen name="assistência" component={Assistance} />
+      <Tab.Screen name="vendas" component={Pieces} />
     </Tab.Navigator>
   );
 }
@@ -152,6 +127,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="ForgotPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen 
           name="Profile" 

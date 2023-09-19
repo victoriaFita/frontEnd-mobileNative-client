@@ -1,26 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Animated, Modal, Button, Linking, TextInput } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { createStackNavigator } from '@react-navigation/stack';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import userService from '../../services/users';
 
 export default function ProfileScreen({ navigation }) {
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
     const fetchUser = async () => {
       const users = await userService.getAllUsers();
-      // first user from the list
       setUser(users[0]);
     };
-    
+
     fetchUser();
   }, []);
-  
+
+  const selectImage = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Você precisa permitir o acesso à galeria para continuar!');
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
+
+    if (pickerResult.cancelled || !pickerResult.assets || pickerResult.assets.length === 0) return;
+
+    const selectedImage = pickerResult.assets[0];
+
+    try {
+      await userService.updateUserImage(user.id, selectedImage);
+      const updatedUser = await userService.getUserById(user.id);
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Failed to update image:', error);
+      alert('Erro ao atualizar a imagem.');
+    }
+  };
+
+  const handleLogout = async () => {
+    await userService.logout();
+    navigation.navigate('Login');
+  };
 
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
@@ -31,61 +55,25 @@ export default function ProfileScreen({ navigation }) {
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
-  
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', paddingTop: 0, paddingBottom: 28, paddingHorizontal: 28 }}>
       <View style={styles.container}>
-        <Image
-          source={{ uri: user && user.image ? user.image.url : 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
-          style={styles.profileImage}
-        />
+        <TouchableOpacity onPress={selectImage}>
+          <Image
+            source={{ uri: user?.image?.url || 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
         <Text style={styles.title}>{user ? `${user.first_name} ${user.last_name}` : 'Loading...'}</Text>
-        <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1136840236559769672/profile.png' }}
-            style={styles.icon}
-          />
-          <View>
-            <Text style={styles.buttonTitle}>Minha Conta</Text>
-            <Text style={styles.buttonText}>Senha, CEP, E-mail, Telefone</Text>
-          </View>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-            style={styles.arrowIcon}
-          />
+        <Text style={styles.userInfo}>E-mail: {user?.email}</Text>
+        <Text style={styles.userInfo}>Telefone: {user?.telefone || 'Não informado'}</Text>
+        <TouchableOpacity style={[styles.button, styles.buttonMargin]} onPress={() => navigation.navigate('ForgotPassword')}> 
+          <Text style={styles.buttonText}>Mudar Senha</Text>
         </TouchableOpacity>
-        <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1136840032917930094/settings_4.png' }}
-            style={styles.icon}
-          />
-          <View>
-            <Text style={styles.buttonTitle}>Configurações</Text>
-            <Text style={styles.buttonText}>Notificações, Preferências</Text>
-          </View>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-            style={styles.arrowIcon}
-          />
+        <TouchableOpacity style={styles.buttonLogout} onPress={handleLogout}>
+          <Text style={styles.buttonTextLogout}>Logout</Text>
         </TouchableOpacity>
-        <View style={styles.separator} />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131660713878900867/help.png' }}
-            style={styles.icon}
-          />
-          <View>
-            <Text style={styles.buttonTitle}>Ajuda</Text>
-          </View>
-          <Image
-            source={{ uri: 'https://cdn.discordapp.com/attachments/1059425565330911284/1131681200059207740/right-arrow_1.png' }}
-            style={styles.arrowIcon}
-          />
-        </TouchableOpacity>
-        <View style={styles.separator} />
       </View>
     </ScrollView>
   );
@@ -96,11 +84,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 20,
   },
   profileImage: {
     width: 100,
@@ -114,29 +97,47 @@ const styles = StyleSheet.create({
     fontSize: 21,
     marginBottom: 30,
   },
+  userInfo: {
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    marginBottom: 5,
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 5,
+    marginVertical: 10,
+    backgroundColor: '#FB5F21',
   },
-  icon: {
-    width: 28,
-    height: 28,
-    marginRight: 10,
+  buttonLogout: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    borderRadius: 5,
+    marginVertical: 10,
+    backgroundColor: 'transparent',
   },
-  buttonTitle: {
-    fontFamily: "Poppins_600SemiBold",
-    fontSize: 15,
-  },
+
   buttonText: {
-    fontFamily: "Poppins_400Regular",
-    fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.6)',
+    flex: 1,
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 16,
+    color: 'white',
+    textAlign: 'center',
   },
-  arrowIcon: {
-    marginLeft: 'auto',
-    width: 20,
-    height: 20,
+  buttonTextLogout: {
+    flex: 1,
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
   },
   separator: {
     width: '100%',
@@ -144,4 +145,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     marginVertical: 20,
   },
+  buttonMargin: {
+    marginTop: 70,
+  },
 });
+
