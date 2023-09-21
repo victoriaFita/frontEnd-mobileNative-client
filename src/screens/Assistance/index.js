@@ -140,7 +140,7 @@ export default function AssistenceScreen() {
                             value={brand}
                         />
                         <TextInput
-                            style={{ height: 60, borderColor: 'rgba(0, 0, 0, 0.1)', borderWidth: 1, marginBottom: 20, borderRadius: 12, paddingLeft: 10, fontFamily: 'Poppins_400Regular', fontSize: 16, color: 'black', height: 250, textAlign: 'left' }}
+                            style={{ height: 60, borderColor: 'rgba(0, 0, 0, 0.1)', borderWidth: 1, marginBottom: 20, borderRadius: 12, paddingLeft: 10, fontFamily: 'Poppins_400Regular', fontSize: 16, color: 'black', height: 120, textAlign: 'left' }}
                             placeholder="Descrição do Problema"
                             placeholderTextColor="rgba(0, 0, 0, 0.6)"
                             onChangeText={text => setProblemDescription(text)}

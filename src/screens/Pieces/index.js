@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, Text as RNText, TouchableOpacity, Image, Animated, Modal, Button, Linking, TextInput } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { createStackNavigator } from '@react-navigation/stack';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import equipmentService from '../../services/equipments';
+import EquipmentService from '../../services/equipments';
+import ItemService from '../../services/items';
 
 function Text(props) {
     return <RNText {...props} style={[props.style, {}]} />;
@@ -14,21 +10,21 @@ function Text(props) {
 export default function PiecesScreen() {
     const categories = ['Equipamento', 'Peça', 'Produto'];
     const states = ['Novo', 'Semi-novo'];
-    const [equipments, setEquipments] = useState([]);
-    const [brands, setBrands] = useState([]);
+    const [pieces, setPieces] = useState([]);
     const [selectedPieces, setSelectedPieces] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [buttonOpacity] = useState(new Animated.Value(0));
     const [filterModalVisible, setFilterModalVisible] = useState(false);
     const [filter, setFilter] = useState({ categories: [], brands: [], states: [] });
 
-    const fetchEquipments = async () => {
-        const data = await equipmentService.getAllEquipments();
-        setEquipments(data);
+    const fetchPieces = async () => {
+        const equipmentData = await EquipmentService.getAllEquipments();
+        const itemData = await ItemService.getAllItems();
+        setPieces([...equipmentData, ...itemData]);
     };
 
     useEffect(() => {
-        fetchEquipments();
+        fetchPieces();
     }, []);
 
     useEffect(() => {
@@ -39,10 +35,10 @@ export default function PiecesScreen() {
         }).start();
     }, [selectedPieces.length]);
 
-    const handleEquipmentPress = (equipment) => {
-        setSelectedPieces(selectedPieces => selectedPieces.find(selectedPiece => selectedPiece.id === equipment.id)
-            ? selectedPieces.filter(selectedPiece => selectedPiece.id !== equipment.id)
-            : [...selectedPieces, equipment]);
+    const handlePiecePress = (piece) => {
+        setSelectedPieces(selectedPieces => selectedPieces.find(selected => selected.id === piece.id)
+            ? selectedPieces.filter(selected => selected.id !== piece.id)
+            : [...selectedPieces, piece]);
     };
 
     const getGreeting = () => {
@@ -52,13 +48,13 @@ export default function PiecesScreen() {
 
     const handleWhatsAppRedirect = () => {
         let greeting = getGreeting();
-        let itemNames = selectedPieces.map(piece => piece.name).join(', ');
-        let message = `${greeting}, estou interessado ${selectedPieces.length > 1 ? 'nos itens:' : 'no item:'} ${itemNames}. Teria em estoque?`;
+        let pieceNames = selectedPieces.map(piece => piece.name).join(', ');
+        let message = `${greeting}, estou interessado ${selectedPieces.length > 1 ? 'nos itens:' : 'no item:'} ${pieceNames}. Teria em estoque?`;
         let whatsappUrl = `https://api.whatsapp.com/send/?phone=%2B5547992531701&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
         Linking.openURL(whatsappUrl);
     };
 
-    const filteredPieces = equipments.filter(piece =>
+    const filteredPieces = pieces.filter(piece =>
         piece.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
         (filter.categories.length === 0 || filter.categories.includes(piece.category)) &&
         (filter.brands.length === 0 || filter.brands.includes(piece.brand)) &&
@@ -94,14 +90,14 @@ export default function PiecesScreen() {
                     </TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                    {filteredPieces.map((equipment) => (
-                        <TouchableOpacity key={equipment.id} onPress={() => handleEquipmentPress(equipment)} style={{ width: '48%', marginBottom: 20, backgroundColor: '#F9F9F9', borderRadius: 10, padding: 10, alignItems: 'center', borderColor: selectedPieces.some(p => p.id === equipment.id) ? '#FB5F21' : 'transparent', borderWidth: 2 }}>
+                    {filteredPieces.map((piece) => (
+                        <TouchableOpacity key={piece.id} onPress={() => handlePiecePress(piece)} style={{ width: '48%', marginBottom: 20, backgroundColor: '#F9F9F9', borderRadius: 10, padding: 10, alignItems: 'center', borderColor: selectedPieces.some(p => p.id === piece.id) ? '#FB5F21' : 'transparent', borderWidth: 2 }}>
                             <Image 
-                                source={{ uri: equipment.image.url }}
+                                source={{ uri: piece.image.url }}
                                 style={{ width: '100%', height: 150, resizeMode: 'contain', marginBottom: 10, borderRadius: 10 }}
                             />
-                            <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 16 }}>{equipment.name}</Text>
-                            <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: 'rgba(0, 0, 0, 0.6)' }}>{equipment.model}</Text>
+                            <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 16 }}>{piece.name}</Text>
+                            <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: 'rgba(0, 0, 0, 0.6)' }}>{piece.model || piece.description}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -166,18 +162,6 @@ export default function PiecesScreen() {
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
-                        <Text style={styles.modalSubtitle}>Por marca:</Text>
-                        <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
-                            {brands.map(brand => (
-                                <TouchableOpacity
-                                    key={brand}
-                                    style={[styles.filterButton, { backgroundColor: filter.brands.includes(brand) ? '#FB5F21' : '#E5E5E5' }]}
-                                    onPress={() => handleFilterSelect('brands', brand)}
-                                >
-                                    <Text style={[styles.filterText, { color: filter.brands.includes(brand) ? '#FFFFFF' : '#000000' }]}>{brand}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
                         <Text style={styles.modalSubtitle}>Por estado:</Text>
                         <ScrollView horizontal contentContainerStyle={styles.filterOptions}>
                             {states.map(state => (
@@ -210,108 +194,104 @@ export default function PiecesScreen() {
         </View>
     );
 }
+
 const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-  },
-  buttonTitle: {
-    fontFamily: "Poppins_600SemiBold",
-    fontSize: 15,
-  },
-  buttonText: {
-    fontFamily: "Poppins_400Regular",
-    fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.6)',
-  },
-
-  // Pieces
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 30,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins_600SemiBold',
-    textAlign: 'left',
-  },
-  modalDescription: {
-    paddingTop: 7,
-    fontSize: 12,
-    fontFamily: 'Poppins_400Regular',
-    color: 'rgba(0, 0, 0, 0.6)',
-    marginBottom: 10,
-    textAlign: 'left',
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    fontFamily: 'Poppins_400Regular',
-    marginTop: 10,
-  },
-  filterOptions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  filterButton: {
-    borderRadius: 50,
-    marginVertical: 5,
-    padding: 8,
-    marginRight: 10,
-    minWidth: 65,
-    justifyContent: 'center',
-    alignItems: 'center',
-
-  },
-  filterText: {
-    fontFamily: 'Poppins_400Regular',
-    textAlign: 'center',
-    fontSize: 13.5,
-  },
-  filterActions: {
-    alignItems: 'center',
-    justifyContent: "center",
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  clearFilterButton: {
-    backgroundColor: 'white',
-    borderRadius: 50,
-    padding: 15,
-    marginBottom: 20,
-  },
-
-  clearFilterText: {
-    color: '#FB5F21',
-    textAlign: 'center',
-    fontFamily: 'Poppins_400Regular',
-  },
-  applyFilterButton: {
-    backgroundColor: '#FB5F21',
-    borderRadius: 50,
-    width: 280,
-    padding: 15,
-    marginBottom: 20,
-  },
-
-  applyFilterText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontFamily: 'Poppins_600SemiBold',
-  },
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+    },
+    buttonTitle: {
+        fontFamily: "Poppins_600SemiBold",
+        fontSize: 15,
+    },
+    buttonText: {
+        fontFamily: "Poppins_400Regular",
+        fontSize: 12,
+        color: 'rgba(0, 0, 0, 0.6)',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 30,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontFamily: 'Poppins_600SemiBold',
+        textAlign: 'left',
+    },
+    modalDescription: {
+        paddingTop: 7,
+        fontSize: 12,
+        fontFamily: 'Poppins_400Regular',
+        color: 'rgba(0, 0, 0, 0.6)',
+        marginBottom: 10,
+        textAlign: 'left',
+    },
+    modalSubtitle: {
+        fontSize: 14,
+        fontFamily: 'Poppins_400Regular',
+        marginTop: 10,
+    },
+    filterOptions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    filterButton: {
+        borderRadius: 50,
+        marginVertical: 5,
+        padding: 8,
+        marginRight: 10,
+        minWidth: 65,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    filterText: {
+        fontFamily: 'Poppins_400Regular',
+        textAlign: 'center',
+        fontSize: 13.5,
+    },
+    filterActions: {
+        alignItems: 'center',
+        justifyContent: "center",
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        marginTop: 20,
+    },
+    clearFilterButton: {
+        backgroundColor: 'white',
+        borderRadius: 50,
+        padding: 15,
+        marginBottom: 20,
+    },
+    clearFilterText: {
+        color: '#FB5F21',
+        textAlign: 'center',
+        fontFamily: 'Poppins_400Regular',
+    },
+    applyFilterButton: {
+        backgroundColor: '#FB5F21',
+        borderRadius: 50,
+        width: 280,
+        padding: 15,
+        marginBottom: 20,
+    },
+    applyFilterText: {
+        color: '#fff',
+        textAlign: 'center',
+        fontFamily: 'Poppins_600SemiBold',
+    },
 });
