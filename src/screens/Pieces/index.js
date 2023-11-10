@@ -21,14 +21,19 @@ export default function PiecesScreen() {
 
     const fetchEquipments = async () => {
         const data = await equipmentService.getAllEquipments();
-        setEquipments(data);
-        const uniqueBrands = [...new Set(data.map(equipment => equipment.brand))];
-        setBrands(uniqueBrands);
+        if (JSON.stringify(data) !== JSON.stringify(equipments)) {
+            setEquipments(data);
+            const uniqueBrands = [...new Set(data.map(equipment => equipment.brand))];
+            setBrands(uniqueBrands);
+        }
     };
 
     useEffect(() => {
         fetchEquipments();
-    }, []);
+        const interval = setInterval(fetchEquipments, 100000); // Poll every 10 minutes
+
+        return () => clearInterval(interval); // Clear interval on component unmount
+    }, [equipments]);
 
     useEffect(() => {
         Animated.timing(buttonOpacity, {
@@ -106,7 +111,7 @@ export default function PiecesScreen() {
                     {filteredPieces.map((equipment) => (
                         <TouchableOpacity key={equipment.id} onPress={() => handleEquipmentPress(equipment)} style={{ width: '48%', marginBottom: 20, backgroundColor: '#F9F9F9', borderRadius: 10, padding: 10, alignItems: 'center', borderColor: cart.some(p => p.id === equipment.id) ? '#FB5F21' : 'transparent', borderWidth: 2 }}>
                             <Image 
-                                source={{ uri: equipment.image.url }}
+                                source={{ uri: equipment.cover.url }}
                                 style={{ width: '100%', height: 150, resizeMode: 'contain', marginBottom: 10, borderRadius: 10 }}
                             />
                             <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 16 }}>{equipment.name}</Text>
