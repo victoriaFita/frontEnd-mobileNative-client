@@ -66,11 +66,12 @@ class UserService {
       throw new Error('No image URI provided.');
     }
 
-    data.append('file', {
-      name: fileName,
-      type: imageResponse.type || 'image/jpeg',
-      uri: imageUri,
-    });
+  // Certifique-se de que o nome do campo aqui ('cover') corresponda ao esperado pelo seu backend
+  data.append('cover', {
+    name: fileName,
+    type: imageResponse.type || 'image/jpeg',
+    uri: imageUri,
+  });
 
     const accessToken = await AsyncStorage.getItem('accessToken');
 
@@ -82,6 +83,7 @@ class UserService {
         },
       });
       console.log("Server response:", response.data);
+      return response.data;
     } catch (error) {
       console.error("Axios error:", error);
       throw error;

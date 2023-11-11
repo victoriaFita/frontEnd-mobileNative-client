@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, Text as RNText, TouchableOpacity, Image, Linking, TextInput } from 'react-native';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 import equipmentService from '../../services/equipments';
 
 function Text(props) {
@@ -18,8 +20,8 @@ export default function AssistenceScreen() {
   const [serviceLocation, setServiceLocation] = useState(null);
   const [desiredDate, setDesiredDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [name, setName] = useState('Augusto Vice');
-  const [cep, setCep] = useState('89210-680');
+  const [name, setName] = useState('');
+  const [cep, setCep] = useState('');
   const [location, setLocation] = useState('');
   const [equipments, setEquipments] = useState([]);
   const [formValid, setFormValid] = useState(false);
@@ -93,7 +95,6 @@ export default function AssistenceScreen() {
             <View>
                 <Text style={{ marginBottom: 20, fontFamily: 'Poppins_400Regular' }}>Por favor, preencha as informações abaixo para solicitar um serviço de assistência.</Text>
 
-                {/* As etapas são renderizadas aqui */}
                 {currentStep === 1 && (
                     <>
                         <Text style={{ marginBottom: 10, fontFamily: 'Poppins_600SemiBold' }}>Tipo de Serviço</Text>
@@ -168,12 +169,18 @@ export default function AssistenceScreen() {
                                 style={{ marginLeft: 'auto', width: 20, height: 20, marginRight: 15 }}
                             />
                         </TouchableOpacity>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerVisible}
-                            mode="date"
-                            onConfirm={handleConfirm}
-                            onCancel={hideDatePicker}
-                        />
+                        {isDatePickerVisible && (
+            <DateTimePicker
+                value={desiredDate}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                const currentDate = selectedDate || desiredDate;
+                setDesiredDate(currentDate);
+                setDatePickerVisibility(Platform.OS === 'ios');
+            }}
+            />
+            )}
                         <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center', marginBottom: 20 }}>A data pode não estar disponível, será validada durante a conversa.</Text>
                     </>
                 )}
@@ -214,7 +221,7 @@ export default function AssistenceScreen() {
                         padding: 10, 
                         borderRadius: 50, 
                         marginTop: 10, 
-                        width: currentStep === 5 ? '100%' : '48%',  // Aqui é a alteração
+                        width: currentStep === 5 ? '100%' : '48%',
                         alignItems: 'center', 
                         justifyContent: 'center', 
                         alignSelf: 'center', 

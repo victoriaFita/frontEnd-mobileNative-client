@@ -59,9 +59,9 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: 'white', paddingTop: 0, paddingBottom: 28, paddingHorizontal: 28 }}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={selectImage}>
+        <TouchableOpacity>
           <Image
-            source={{ uri: user?.image?.url || 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
+            source={{ uri: user?.cover?.url || 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
             style={styles.profileImage}
           />
         </TouchableOpacity>
