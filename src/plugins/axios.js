@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://192.168.227.116:19003/'
+  baseURL: 'https://victoriafit.2.sg-1.fl0.io/'
 })
 
 export default api

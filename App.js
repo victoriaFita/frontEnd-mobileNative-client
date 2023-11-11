@@ -90,7 +90,7 @@ function TabNavigator() {
             style={{ marginRight: 10 }}
           >
             <Image
-              source={{ uri: user?.cover?.url || 'https://cdn.discordapp.com/attachments/1059425565330911284/1103168510403805244/317769461_531223468937840_7323651060704758280_n.png' }}
+              source={{ uri: user?.cover?.url || 'https://cdn.discordapp.com/attachments/1086078404492787766/1153715524480540692/default-profile-picture-avatar-photo-placeholder-vector-illustration.png' }}
               style={{ width: 40, height: 40, borderRadius: 25, marginRight: 20, marginTop: 10 }}
             />
           </TouchableOpacity>

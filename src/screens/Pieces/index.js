@@ -30,7 +30,7 @@ export default function PiecesScreen() {
 
     useEffect(() => {
         fetchEquipments();
-        const interval = setInterval(fetchEquipments, 100000); // Poll every 10 minutes
+        const interval = setInterval(fetchEquipments, 5000); // Poll every 30 seconds
 
         return () => clearInterval(interval); // Clear interval on component unmount
     }, [equipments]);
